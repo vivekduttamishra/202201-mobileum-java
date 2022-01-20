@@ -5,6 +5,7 @@ import utils.data.QuickSort;
 import business.services.StoreManager;
 import utils.presentation.Input;
 import utils.presentation.Printer;
+import utils.data.BinarySearch;
 
 
 class App {
@@ -43,9 +44,11 @@ class App {
         System.out.println(sort);
 
 
+        BinarySearch search=new BinarySearch();
+        System.out.println(search);
 
        
-
+        System.out.println(list.about());
 
     }
     

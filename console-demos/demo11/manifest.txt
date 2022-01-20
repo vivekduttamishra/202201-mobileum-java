@@ -1,0 +1,4 @@
+COPYRIGHT: www.conceptarchitect.in
+PROJECT_URL: www.conceptarchitect.in/furnitureapp
+Main-Class: in.conceptarchitect.app.App
+VERSION: 2.0.1

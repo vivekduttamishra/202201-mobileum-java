@@ -1,10 +1,14 @@
-import business.furnitures.Table;
-import business.furnitures.Chair;
-import utils.data.List;
-import utils.data.QuickSort;
-import business.services.StoreManager;
-import utils.presentation.Input;
-import utils.presentation.Printer;
+package in.conceptarchitect.app;
+
+import in.conceptarchitect.business.furnitures.Table;
+import in.conceptarchitect.business.furnitures.Chair;
+import in.conceptarchitect.utils.data.List;
+import in.conceptarchitect.utils.data.QuickSort;
+import in.conceptarchitect.business.services.StoreManager;
+import in.conceptarchitect.utils.presentation.Input;
+import in.conceptarchitect.utils.presentation.Printer;
+
+import com.dataminers.utils.data.BinarySearch;
 
 
 class App {
@@ -17,7 +21,7 @@ class App {
        Table table1=new Table();
 
         //ambigous classes can be used with fully qualified name.
-        utils.data.Table table2=new utils.data.Table();
+        in.conceptarchitect.utils.data.Table table2=new in.conceptarchitect.utils.data.Table();
 
         List list=new List();
         
@@ -43,9 +47,15 @@ class App {
         System.out.println(sort);
 
 
+        BinarySearch search=new BinarySearch();
+        System.out.println(search);
 
        
+        System.out.println(list.about());
 
+        com.dataminers.utils.data.List list2=new com.dataminers.utils.data.List();
+
+        System.out.println(list2.about());
 
     }
     

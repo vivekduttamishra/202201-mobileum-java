@@ -1,31 +1,26 @@
+import business.furnitures.*;
+import utils.data.*;
 import business.furnitures.Table;
-import business.furnitures.Chair;
-import utils.data.List;
-import utils.data.QuickSort;
-import business.services.StoreManager;
-import utils.presentation.Input;
-import utils.presentation.Printer;
-
 
 class App {
 
     public static void main(String []args){
 
-       StoreManager manager=new StoreManager();
+        business.services.StoreManager manager=new business.services.StoreManager();
         
        Chair chair =new Chair();
        Table table1=new Table();
 
-        //ambigous classes can be used with fully qualified name.
+
         utils.data.Table table2=new utils.data.Table();
 
-        List list=new List();
+        utils.data.List list=new utils.data.List();
         
-        Input input =new Input();
+        utils.presentation.Input input =new utils.presentation.Input();
         
-        Printer printer=new Printer();
+        utils.presentation.Printer printer=new utils.presentation.Printer();
 
-        QuickSort sort=new QuickSort();
+        utils.data.QuickSort sort=new utils.data.QuickSort();
 
         System.out.println(chair);
         System.out.println(table1);
