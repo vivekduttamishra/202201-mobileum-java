@@ -21,6 +21,7 @@ public class BankAccount {
 				
 	}
 	
+	
 	public void deposit() {
 		int amount=input.readInt("Amount to Deposit? ");
 		if(amount>0) {
@@ -30,6 +31,9 @@ public class BankAccount {
 			System.out.println("Invalid amount. Deposit Failed");
 		}		
 	}
+	
+	
+	
 	
 	public void withdraw() {
 		int amount=input.readInt("Amount to withdraw?");
