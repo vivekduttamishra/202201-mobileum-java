@@ -1,43 +1,136 @@
 package in.conceptarchitect.banking.specs;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
+import in.conceptarchitect.banking.Bank;
+
 public class BankSpecs {
 	
-	@Ignore
-	@Test
-	public void bankShouldHaveANameAndInterestRate() {
-		fail("NOT YET IMPLEMENTED");
-	}
 	
-	@Ignore
-	@Test	
-	public void openAccountShouldReturnUniqueAccountNumber() {
+	@Test
+	public void bankShouldHaveAName() {
+		
+		//ARRANGE
+		String name="ICICI";
+		
+		//ACT
+		Bank bank=new Bank(name,10);
+		
+		//ASSERT
+		assertEquals(name, bank.getName());
 		
 	}
 	
-	@Ignore
+	
+	@Test
+	public void bankShouldHaveAInterestRAte() {
+		//ARRANGE
+		
+		double rate=12;
+		
+		//ACT
+		Bank bank=new Bank("Some Name",rate);
+		
+		//ASSERT
+		assertEquals(rate, bank.getRate(),0);
+				
+		
+	}
+	
+	@Test
+	public void openAccountShouldTakeNamePasswordAndBalanceAndReturnAccountNumber() {
+		// ARRANGE
+		Bank bank = new Bank("ICICI", 10);
+		 
+		// ACT
+		int accountNumber1 = bank.openAccount("Aman", "mypassword", 1000.0);
+		
+		// ASSERT
+		assertTrue(accountNumber1 > 0);
+	}
+	
+	
+	@Test		
+	public void openAccountShouldReturnUniqueAccountNumber() {
+		// ARRANGE
+		Bank bank = new Bank("ICICI", 10);
+		
+		// ACT 
+		var accountNumber1 = bank.openAccount("aman", "mypassword", 1000.0 );
+		var accountNumber2 = bank.openAccount("arpit", "hispassword", 2000.0 );
+		
+		// ASSERT
+		assertNotEquals(accountNumber1, accountNumber2);
+	}
+	
+	
 	@Test
 	public void openAccountShouldIncreaseTotalAccountCountInTheBank() {
+		//Arrange
+		Bank bank = new Bank("ICICI", 10);
 		
+		// ACT 
+		var accountNumber1 = bank.openAccount("aman", "mypassword", 1000.0 );
+		var accountNumber2 = bank.openAccount("arpit", "hispassword", 2000.0 );
+		
+		// ASSERT
+		assertEquals(2, bank.getAccountCount());
 	}
-	@Ignore
+	
+	
+	
 	@Test
 	public void closeAccountShouldFailFromInvalidAccountNumber() {
+		//Arrange
+		Bank bank = new Bank("ICICI", 10);
+		
+		var accountNumber1 = bank.openAccount("aman", "mypassword", 1000.0 );
+		var accountNumber2 = bank.openAccount("arpit", "hispassword", 2000.0 );
+		
+		//ACT
+		boolean result = bank.closeAccount(100, "any-password");
+		
+		assertFalse(result);
+		
 		
 	}
-	@Ignore
+	
 	@Test
 	public void closeAccountShouldFailFromInvalidAccountPassword() {
+		//ARRANGE
+		Bank bank = new Bank("ICICI", 10);
+		
+		
+		var accountNumber1 = bank.openAccount("aman", "mypassword", 1000.0 );
+		var accountNumber2 = bank.openAccount("arpit", "hispassword", 2000.0 );
+		
+		//ACT
+		boolean result = bank.closeAccount(accountNumber1, "wrong-password");
+		
+		assertFalse(result);
 		
 	}
-	@Ignore
+	
 	@Test
 	public void closeAccountShouldCloseTheAccountWithRightCredentials() {
+		//ARRANGE
+		Bank bank = new Bank("ICICI", 10);
+		String correctPassword="p@ss";
 		
+		
+		var accountNumber1 = bank.openAccount("aman", correctPassword, 1000.0 );
+		var accountNumber2 = bank.openAccount("arpit", correctPassword, 2000.0 );
+		
+		//ACT
+		boolean result = bank.closeAccount(accountNumber1, correctPassword);
+		
+		assertTrue(result);
 	}
 	@Ignore
 	@Test
