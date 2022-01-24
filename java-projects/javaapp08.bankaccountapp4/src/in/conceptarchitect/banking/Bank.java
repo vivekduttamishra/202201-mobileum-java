@@ -5,7 +5,7 @@ public class Bank {
 	
 	private String name;
 	private double rate;
-	int accountCount=0;
+	
 
 	public Bank(String name, double rate) {
 		// TODO Auto-generated constructor stub
@@ -22,10 +22,30 @@ public class Bank {
 		// TODO Auto-generated method stub
 		return rate;
 	}
+	
+	int accountCount=0;	
+	BankAccount [] accounts=new BankAccount[100];
 
-	public int openAccount(String string, String string2, double d) {
+
+	public int openAccount(String name, String password, double amount) {
 		// TODO Auto-generated method stub
-		return ++accountCount;
+		int accountNumber= ++accountCount;
+		var account=new BankAccount(accountNumber, name,password,amount);
+		accounts[accountNumber]=account;
+		return accountNumber;
+	}
+	
+	
+	public double closeAccount(int accountNumber, String password) {
+		// TODO Auto-generated method stub
+		if(accountNumber<1 || accountNumber>accountCount)
+			return -1;
+		
+		var account=accounts[accountNumber];
+		if(!account.authenticate(password))
+			return -1;
+		accountCount--;
+		return account.getBalance();
 	}
 
 	public int getAccountCount() {
@@ -33,10 +53,14 @@ public class Bank {
 		return accountCount;
 	}
 
-	public boolean closeAccount(int i, String string) {
+	public BankAccount getAccount(int accountNumber, String password) {
 		// TODO Auto-generated method stub
-		return true;
+		
+		
+		return null;
 	}
+
+	
 
 }
 
