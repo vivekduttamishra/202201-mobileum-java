@@ -90,6 +90,13 @@ public class ManagerTest {
 		assertContainsSubstring(emp.info(), project);
 		
 	}
+	
+	@Test public void superClassReferenceCantDirectlyReferToNewPropertiesOfSubClass() {
+		//Employee emp=manager;
+		
+	//	var project= emp.getProject(); //doesn't have getProject
+		
+	}
 }
 
 
