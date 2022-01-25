@@ -16,10 +16,10 @@ public class EmployeeTest {
 	
 	@Before
 	public void arrange() {
-		employee=new Employee();
-		employee.setId(id);
-		employee.setName(name);
-		employee.setSalary(salary);
+		employee=new Employee(id,name,salary);
+//		employee.setId(id);
+//		employee.setName(name);
+//		employee.setSalary(salary);
 	}
 	
 	@Test
