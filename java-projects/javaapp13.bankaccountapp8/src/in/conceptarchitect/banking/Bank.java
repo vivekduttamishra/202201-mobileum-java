@@ -1,9 +1,5 @@
 package in.conceptarchitect.banking;
 
-import in.conceptarchitect.banking.exceptions.InsufficientBalanceException;
-import in.conceptarchitect.banking.exceptions.InvalidAccountException;
-import in.conceptarchitect.banking.exceptions.InvalidAccountTypeException;
-
 public class Bank {
 
 	
@@ -17,7 +13,7 @@ public class Bank {
 		this.rate=rate;
 	}
 
-	public String getName() { 
+	public String getName() {
 		// TODO Auto-generated method stub
 		return name;
 	}
@@ -44,7 +40,7 @@ public class Bank {
 				account=new OverdraftAccount(0, name, password, amount);
 		
 		if(account==null)
-				throw new InvalidAccountTypeException(0,"Invalid Account Type :"+accountType);
+				return -1;
 		
 		return addAccount(account);
 	}
@@ -59,26 +55,20 @@ public class Bank {
 	
 	private BankAccount getAccount(int accountNumber) {
 		if(accountNumber<1 || accountNumber>lastAccountNumber || accounts[accountNumber]==null)
-			throw new InvalidAccountException(accountNumber);
+			return null;
 
-		//it either returns a valid value or throws an exception
+
 		return accounts[accountNumber];
-	}
-	
-	public BankAccount getAccount(int accountNumber, String password) {
-		var account=getAccount(accountNumber);
-		account.authenticate(password);
-		return account;
 	}
 	
 	
 	public double closeAccount(int accountNumber, String password) {
 		// TODO Auto-generated method stub
 		var account=getAccount(accountNumber,password);
-		
+		if(account==null)
+			return -1;
 		if(account.getBalance()<0)
-			throw new InsufficientBalanceException(accountNumber,-account.getBalance());
-		
+			return -1;
 		accounts[accountNumber]=null;
 		accountCount--;
 		return account.getBalance();
@@ -89,29 +79,53 @@ public class Bank {
 		return accountCount;
 	}
 
-	
-
-	public void deposit(int accountNumber, double amount) {
-		// TODO Auto-generated method stub
-		var account=getAccount(accountNumber);		
-		account.deposit(amount);
+	public BankAccount getAccount(int accountNumber, String password) {
+		var account=getAccount(accountNumber);
 		
+		
+		
+		if(account==null || !account.authenticate(password))
+			return null;
+		
+		return account;
 	}
 
-	public void withdraw(int accountNumber, double amount, String password) {
+	public boolean deposit(int accountNumber, double amount) {
 		// TODO Auto-generated method stub
 		var account=getAccount(accountNumber);
-		account.withdraw(amount, password);
-		
+		if(account!=null){
+			return account.deposit(amount);
+		} else
+			return false;
 	}
 
-	public void transfer(int accountNumber, double amount, String password, int targetAccount) {
+	public Response withdraw(int accountNumber, double amount, String password) {
+		// TODO Auto-generated method stub
+		var account=getAccount(accountNumber);
+		if(account!=null)
+			return account.withdraw(amount, password);
+		else
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"No such account");
+	}
+
+	public Response transfer(int accountNumber, double amount, String password, int targetAccount) {
 		// TODO Auto-generated method stub
 		var source= getAccount(accountNumber);
+		if(source==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"Invalid Source Account");
+
 		var target=getAccount(targetAccount);
+		if(target==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"Invalid Target Account");
+	
+		var withdrawResult= source.withdraw(amount, password);
+		if(withdrawResult.getCode()==ResponseStatus.SUCCESS) {
+			target.deposit(amount);
+			return new Response(ResponseStatus.SUCCESS,null);
 			
-		source.withdraw(amount, password);
-		target.deposit(amount);
+		}		
+		
+		return withdrawResult; 
 	}
 
 	public void creditInterest() {
@@ -126,16 +140,21 @@ public class Bank {
 	public double getBalance(int accountNumber, String password) {
 		// TODO Auto-generated method stub
 		var account=getAccount(accountNumber);
-		account.authenticate(password);
-		return account.getBalance();
-		
+		if(account!=null && account.authenticate(password))
+				return account.getBalance();
+		else
+			return -1;
 	}
 
 	
-	public void changePassword(int accountNumber, String currentPassword, String newPassword) {
+	public Response changePassword(int accountNumber, String currentPassword, String newPassword) {
 		var account=getAccount(accountNumber);
-		account.changePassword(currentPassword, newPassword);
-		
+		if(account==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"No such account");
+		if(account.changePassword(currentPassword, newPassword))
+			return new Response(ResponseStatus.SUCCESS,null);
+		else
+			return new Response(ResponseStatus.INVALID_CREDENTIALS,"Invalid Current Password");
 	}
 
 	public String[] getAllAccountsInfo() {

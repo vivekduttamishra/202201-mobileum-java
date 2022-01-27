@@ -1,8 +1,5 @@
 package in.conceptarchitect.banking;
 
-import in.conceptarchitect.banking.exceptions.InsufficientBalanceException;
-import in.conceptarchitect.banking.exceptions.InvalidAmountException;
-import in.conceptarchitect.banking.exceptions.InvalidCredentialsException;
 import in.conceptarchitect.utils.encryption.Encrypt;
 
 public abstract class BankAccount {
@@ -28,32 +25,35 @@ public abstract class BankAccount {
 				
 	}
 	
-	public void deposit(double deposit) {
+	public boolean deposit(double deposit) {
 		
-		validateAmount(deposit);
-		balance+=deposit;
-				
+		if(deposit>0) {
+			balance+=deposit;
+			//System.out.println("Amount is deposited");
+			return true;
+		} else {
+			//System.out.println("Invalid amount. Deposit Failed");
+			return false;
+		}		
 	}
 	
-	private void validateAmount(double amount) {
-		if(amount<=0)
-			throw new InvalidAmountException(accountNumber,amount,"Amount must be positive value");
-	}
 	
-	public void withdraw(double amount,String password) {
+	
+	public Response withdraw(double amount,String password) {
 		
-		authenticate(password);
-		validateAmount(amount);
-
+		if(!this.authenticate(password))
+			return new Response(ResponseStatus.INVALID_CREDENTIALS,"Invalid Credentials");
+		if(amount<0)
+			return new Response(ResponseStatus.INVALID_AMOUNT,"Enter Positive Amount");
 		if(amount>getMaxWithdrawableAmount())
-			throw new InsufficientBalanceException(accountNumber, amount-getMaxWithdrawableAmount(),"Insufficient Balance");
+			return new Response(ResponseStatus.INSUFFICIENT_FUNDS,"Insufficient Funds");
 		
 		balance-=amount;
-		//mission success. no news is good news
+		return new Response(ResponseStatus.SUCCESS,null);
 	}
 	
 		
-	 
+	
 
 	public void creditInterest(double interestRate) {
 		//credits one month interest to the account
@@ -92,19 +92,18 @@ public abstract class BankAccount {
 		
 	}
 	
-	public void authenticate(String password) {
-		
-		if(!Encrypt.instance.match(this.password, password, 10))
-			throw new InvalidCredentialsException(accountNumber);		
-		
+	public boolean authenticate(String password) {
+		return Encrypt.instance.match(this.password, password, 10);
 	}
 	
 	
-	public void changePassword(String oldPassword, String newPassword) {
-		authenticate(oldPassword);
-		//if you reach here old password was correct
-		setPassword(newPassword);
-		 
+	public boolean changePassword(String oldPassword, String newPassword) {
+		if(this.authenticate(oldPassword)) {
+			setPassword(newPassword);
+			return true;
+		} else {
+			return false;
+		} 
 	}
 	
 	

@@ -16,16 +16,16 @@ public class OverdraftAccount extends BankAccount {
 	}
 
 	public double getOdLimit() {
-		// TODO Auto-generated method stub 
+		// TODO Auto-generated method stub
 		return odLimit;
 	}
 	
 	@Override
-	public void deposit(double deposit) {
+	public boolean deposit(double deposit) {
 		// TODO Auto-generated method stub
-		super.deposit(deposit);
+		var result= super.deposit(deposit);
 		calculateOdLimit();
-		
+		return result;
 	}
 	
 	@Override
@@ -42,15 +42,17 @@ public class OverdraftAccount extends BankAccount {
 	}
 	
 	@Override
-	public void withdraw(double amount, String password) {	
+	public Response withdraw(double amount, String password) {	
 		
-		super.withdraw(amount, password);
-		if(balance<0) {
-			var fee= balance/100;
-			balance+=fee;
-		}
+		var result=super.withdraw(amount, password);
+		
+		if(result.getCode()==ResponseStatus.SUCCESS)
+			if(balance<0) {
+				var fee= balance/100;
+				balance+=fee;
+			}
 			
-		
+		return result;
 	}
 
 }

@@ -11,15 +11,13 @@ import org.junit.Test;
 import in.conceptarchitect.banking.BankAccount;
 import in.conceptarchitect.banking.ResponseStatus;
 import in.conceptarchitect.banking.SavingsAccount;
-import in.conceptarchitect.banking.exceptions.InsufficientBalanceException;
-import in.conceptarchitect.banking.exceptions.InvalidCredentialsException;
 
 public class SavingsAccountSpecs {
 	String name="Name";
 	double balance=50000;
 	String correctPassword="p@ss";
 	double interestRate=12;
-	SavingsAccount account; 
+	SavingsAccount account;
 	double minBalance=5000;
 
 	@Before
@@ -58,36 +56,20 @@ public class SavingsAccountSpecs {
 	
 	@Test
 	public void withdrawCantWithdrawIfBalanceDipsBelowMinBalance() {
-		try {
-			account.withdraw(balance-minBalance+1, correctPassword);
-			//if you reach here then expected exception was not thrown
-			fail("expected exception was not thrown"); //test failed
-		}catch(InsufficientBalanceException ex) {
-			//test passed. do nothing
-			//or assert against ex.getMessage();
-			assertEquals("Insufficient Balance", ex.getMessage());
-		}
 		
+		var response= account.withdraw(balance-minBalance+1, correctPassword);
 		
+		assertEquals(ResponseStatus.INSUFFICIENT_FUNDS, response.getCode());
 	}
 	
-	
-	@Test(expected = InvalidCredentialsException.class)	
-	public void withdrawFailsForWrongPassword() {
-		
-		account.withdraw(1, "not"+correctPassword);
-		
-		
-	}
 	
 	@Test
-	public void withdrawShouldWorkInValidCase() {
-		double amount=balance-minBalance-1;
-		account.withdraw(amount, correctPassword);
+	public void withdrawFailsForWrongPassword() {
+		var response=account.withdraw(1, "not-"+correctPassword);
 		
-		assertEquals(balance-amount, account.getBalance(),0.01);
-		
+		assertEquals(ResponseStatus.INVALID_CREDENTIALS, response.getCode());
 	}
+	
 	
 	
 
