@@ -1,6 +1,6 @@
 package in.conceptarchitect.animals.mammals;
 
-public class Tiger extends Cat {
+public class Tiger extends CatFamily {
 
 
 	@Override

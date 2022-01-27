@@ -28,13 +28,37 @@ public class Bank {
 	BankAccount [] accounts=new BankAccount[100];
 
 
-	public int openAccount(String name, String password, double amount) {
+	public int openAccount(String accountType,String name, String password,  double amount) {
 		// TODO Auto-generated method stub
+		
+		BankAccount account=null;
+		if(accountType.equals("savings"))
+				account= new SavingsAccount(0, name,password,amount);
+		else if(accountType.equals("current"))
+				account=new CurrentAccount(0,name,password,amount);
+		else if(accountType.equals("overdraft"))
+				account=new OverdraftAccount(0, name, password, amount);
+		
+		if(account==null)
+				return -1;
+		
+		return addAccount(account);
+	}
+
+	private int addAccount(BankAccount account) {
 		int accountNumber= ++lastAccountNumber;
 		accountCount++;
-		var account=new BankAccount(accountNumber, name,password,amount);
+		account.setAccountNumber(accountNumber);
 		accounts[accountNumber]=account;
 		return accountNumber;
+	}
+	
+	private BankAccount getAccount(int accountNumber) {
+		if(accountNumber<1 || accountNumber>lastAccountNumber || accounts[accountNumber]==null)
+			return null;
+
+
+		return accounts[accountNumber];
 	}
 	
 	
@@ -43,7 +67,8 @@ public class Bank {
 		var account=getAccount(accountNumber,password);
 		if(account==null)
 			return -1;
-		
+		if(account.getBalance()<0)
+			return -1;
 		accounts[accountNumber]=null;
 		accountCount--;
 		return account.getBalance();
@@ -55,15 +80,11 @@ public class Bank {
 	}
 
 	public BankAccount getAccount(int accountNumber, String password) {
-		// TODO Auto-generated method stub
-		if(accountNumber<1 || accountNumber>lastAccountNumber )
-				return null;
+		var account=getAccount(accountNumber);
 		
-		var account=accounts[accountNumber];
-		if(account==null)
-			return null;
 		
-		if(!account.authenticate(password))
+		
+		if(account==null || !account.authenticate(password))
 			return null;
 		
 		return account;
@@ -76,12 +97,22 @@ public class Bank {
 
 	public Response withdraw(int accountNumber, double amount, String password) {
 		// TODO Auto-generated method stub
-		return null;
+		var account=getAccount(accountNumber);
+		return account.withdraw(amount, password);
 	}
 
 	public Response transfer(int accountNumber, int amount, String password, int targetAccount) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void creditInterest() {
+		// TODO Auto-generated method stub
+		for(var i=1;i<=lastAccountNumber;i++) {
+			var account=accounts[i]; //may be null for closed account
+			if(account!=null)
+				account.creditInterest(rate);
+		}
 	}
 
 	

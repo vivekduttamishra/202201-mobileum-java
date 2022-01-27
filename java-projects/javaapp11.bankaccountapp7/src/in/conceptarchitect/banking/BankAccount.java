@@ -1,10 +1,11 @@
 package in.conceptarchitect.banking;
 
-import in.conceptarchitect.utils.Input;
 import in.conceptarchitect.utils.encryption.Encrypt;
 
-public class BankAccount {
+public abstract class BankAccount {
 	
+	
+	protected abstract double getMaxWithdrawableAmount();
 	
 	private String name; //account holder name
 	private int accountNumber;
@@ -51,12 +52,8 @@ public class BankAccount {
 		return new Response(ResponseStatus.SUCCESS,null);
 	}
 	
+		
 	
-	
-	public double getMaxWithdrawableAmount() {
-		// TODO Auto-generated method stub
-		return balance;
-	}
 
 	public void creditInterest(double interestRate) {
 		//credits one month interest to the account
@@ -115,6 +112,14 @@ public class BankAccount {
 	public String info() {
 		//System.out.println(accountNumber+"\t"+name+"\t"+balance);
 		return String.format("%d\t%s\t%f\n",accountNumber,name,balance);
+	}
+
+	//package scope
+	//Bank can change it. But client can't
+	void setAccountNumber(int accountNumber2) {
+		// TODO Auto-generated method stub
+		this.accountNumber=accountNumber;
+		
 	}
 	
 	

@@ -11,4 +11,10 @@ public class CurrentAccount extends BankAccount {
 	public void creditInterest(double interestRate) {
 		//DO NOTHING
 	}
+
+	@Override
+	protected double getMaxWithdrawableAmount() {
+		// TODO Auto-generated method stub
+		return balance;
+	}
 }

@@ -1,6 +1,6 @@
 package in.conceptarchitect.animals.mammals;
 
-public class Cat extends Mammal {
+public abstract class CatFamily extends Mammal {
 	
 	@Override	
 	public String eat() {
