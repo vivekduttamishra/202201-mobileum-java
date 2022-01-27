@@ -1,6 +1,7 @@
 package in.conceptarchitect.banking.specs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +14,8 @@ import org.junit.Test;
 import in.conceptarchitect.banking.Bank;
 import in.conceptarchitect.banking.CurrentAccount;
 import in.conceptarchitect.banking.OverdraftAccount;
+import in.conceptarchitect.banking.Response;
+import in.conceptarchitect.banking.ResponseStatus;
 import in.conceptarchitect.banking.SavingsAccount;
 
 public class BankSpecs {
@@ -135,6 +138,16 @@ public class BankSpecs {
 	}
 	
 	
+	
+	
+	@Test
+	public void openAccountShouldFailForInvalidAccountType() {
+		var result=bank.openAccount("unknown type","Name",correctPassword,initialBalance);
+		
+		assertEquals(-1, result);
+		assertEquals(initialTotalAccounts, bank.getAccountCount());
+	}
+	
 	@Test
 	public void closeAccountShouldFailFromInvalidAccountNumber() {
 		
@@ -183,7 +196,7 @@ public class BankSpecs {
 	}
 	
 	
-	@Ignore
+	
 	@Test
 	public void closeAccountShouldReturnBalanceOnSuccessfulClosure() {
 		
@@ -297,109 +310,260 @@ public class BankSpecs {
 		
 		bank.creditInterest();				
 		
-		
+		//no crash is good for now.
 		
 	}
 	
-	@Ignore
+	
 	@Test
 	public void getBalanceShouldReturnBalanceForCorrectAccountAndPassword() {
+		double balance=bank.getBalance(savingsAccountNumber, correctPassword);
 		
+		assertEquals(initialBalance,balance, 0.01);
 	}
-	@Ignore
+	
+	@Test
+	public void getBalanceShouldFailForNegativeAccountNumber() {
+		double balance=bank.getBalance(-1, correctPassword);
+		assertEquals(-1, balance,0);
+	}
+	
+	
 	@Test
 	public void getBalanceShouldFailForInvalidAccountNumber() {
-		
+		double balance=bank.getBalance(initialTotalAccounts+1, correctPassword);
+		assertEquals(-1, balance,0);
+				
 	}
-	@Ignore
+	
 	@Test
 	public void getBalanceShouldFailForInvalidPassword() {
-		
+		double balance=bank.getBalance(savingsAccountNumber,"not"+ correctPassword);
+		assertEquals(-1, balance,0);
 	}
-	@Ignore
+	
+	@Test
+	public void getBalanceShouldFailForClosedAccount() {
+		//Arrange
+		bank.closeAccount(savingsAccountNumber, correctPassword);
+		//Act
+		double balance=bank.getBalance(savingsAccountNumber, correctPassword);
+		//Assert
+		assertEquals(-1, balance,0);
+	}
+	
+	
+	
 	@Test
 	public void depositShouldFailForInvalidAccountNumber() {
+		boolean result= bank.deposit(initialTotalAccounts+1, 20000);
 		
+		assertFalse(result);
 	}
-	@Ignore
+	
 	@Test
 	public void depositShouldFailForInvalidAmount() {
+	
+		assertFalse(bank.deposit(savingsAccountNumber, -1));
 		
 	}
-	@Ignore
+	
 	@Test
 	public void depositShouldCreditBalanceOnSuccess() {
-		
+	
+		boolean  result= bank.deposit(savingsAccountNumber, 1);
+		assertTrue(result);
+		bankAsserts.assertBalance(savingsAccountNumber, initialBalance+1);
 	}
-	@Ignore
+	
 	@Test
 	public void withdrawShouldFailForInvalidAccountNumber() {
-		
+		Response response= bank.withdraw(initialTotalAccounts+1, 1, correctPassword);
+
+		assertEquals(ResponseStatus.INVALID_ACCOUNT, response.getCode());
 	}
-	@Ignore
+	
 	@Test
 	public void withdrawShouldFailForInvalidPassword() {
-		
+	
+		var response= bank.withdraw(savingsAccountNumber, 1, "not-"+correctPassword);
+
+		assertEquals(ResponseStatus.INVALID_CREDENTIALS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
 	}
-	@Ignore
+	
 	@Test
 	public void withdrawShouldFailForInvalidAmount() {
-		
+		var response=bank.withdraw(currentAccountNumber, -1, correctPassword);
+		assertEquals(ResponseStatus.INVALID_AMOUNT,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
 	}
-	@Ignore
+	
+	
+	
 	@Test
-	public void withdrawShouldFailForOverDraft() {
+	public void withdrawShouldFailForAmountExceedMinBalanceInSavingsAccount() {
+		SavingsAccount account=(SavingsAccount) bank.getAccount(savingsAccountNumber, correctPassword);
+		var response= bank.withdraw(savingsAccountNumber, initialBalance-account.getMinBalance()+1, correctPassword);
+		assertEquals(ResponseStatus.INSUFFICIENT_FUNDS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+	}
+	
+	@Test
+	public void withdrawShouldFailForOverDraftForCurrentAccount() {
+		var toWithdraw= initialBalance + 1;
+		
+		var response= bank.withdraw(currentAccountNumber, toWithdraw, correctPassword);
+		assertEquals(ResponseStatus.INSUFFICIENT_FUNDS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(currentAccountNumber);
 		
 	}
-	@Ignore
+	
+	@Test
+	public void withdrawShouldFailForAmountOverBalancePlusOdLimitForOdAccount() {
+		var toWithdraw= initialBalance*1.1 + 1;
+		
+		var response= bank.withdraw(odAccountNumber, toWithdraw, correctPassword);
+		assertEquals(ResponseStatus.INSUFFICIENT_FUNDS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(odAccountNumber);
+	}
+	
+	
+	
 	@Test
 	public void withdrawShouldReduceBalanceByAmountOnSuccess() {
 		
-	}
-	
-	@Ignore
-	@Test
-	public void transferShouldFailForInvalidSourceAccountNumber() {
+		var response= bank.withdraw(savingsAccountNumber, 1, correctPassword);
+		
+		assertEquals(ResponseStatus.SUCCESS, response.getCode());
+		bankAsserts.assertBalance(savingsAccountNumber, initialBalance-1);
 		
 	}
-	@Ignore
+	
+	
+	@Test
+	public void transferShouldFailForInvalidSourceAccountNumber() {
+		var response= bank.transfer(initialTotalAccounts+1, 1, correctPassword, savingsAccountNumber);
+		
+		assertEquals(ResponseStatus.INVALID_ACCOUNT,response.getCode());
+		assertEquals("Invalid Source Account",response.getMessage());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+		
+		
+	}
+	
+	@Test
+	public void transferShouldFailForInvalidTargetAccountNumber() {
+		var response= bank.transfer(savingsAccountNumber, 1, correctPassword, initialTotalAccounts+1);
+		
+		assertEquals(ResponseStatus.INVALID_ACCOUNT,response.getCode());
+		assertEquals("Invalid Target Account",response.getMessage());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+		
+	}
+	
 	@Test
 	public void transferShouldFailForInvalidPassword() {
 		
+		var response= bank.transfer(currentAccountNumber, 1, "not-"+correctPassword, savingsAccountNumber);
+		
+		assertEquals(ResponseStatus.INVALID_CREDENTIALS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+		bankAsserts.assertBalanceUnchanged(currentAccountNumber);
+		
 	}
-	@Ignore
+	
 	@Test
 	public void transferShouldFailForInvalidAmount() {
 		
-	}
-	@Ignore
-	@Test
-	public void transferShouldFailForOverDraft() {
+		var response= bank.transfer(currentAccountNumber, -1, correctPassword, savingsAccountNumber);
+		
+		assertEquals(ResponseStatus.INVALID_AMOUNT,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+		bankAsserts.assertBalanceUnchanged(currentAccountNumber);
 		
 	}
-	@Ignore
+	
+	@Test
+	public void transferShouldFailForOverDraft() {
+		var response= bank.transfer(currentAccountNumber, initialBalance+1, correctPassword, savingsAccountNumber);
+		
+		assertEquals(ResponseStatus.INSUFFICIENT_FUNDS,response.getCode());
+		bankAsserts.assertBalanceUnchanged(savingsAccountNumber);
+		bankAsserts.assertBalanceUnchanged(currentAccountNumber);
+		
+		
+	}
+	
 	@Test
 	public void transferShouldReduceBalanceInSourceAccountOnSuccess() {
 		
+		var response= bank.transfer(currentAccountNumber, 1, correctPassword, savingsAccountNumber);		
+		assertEquals(ResponseStatus.SUCCESS,response.getCode());		
+		bankAsserts.assertBalance(currentAccountNumber,initialBalance-1);
 	}
-	@Ignore
+	
 	@Test
-	public void transferShouldFailForInvalidTargetAccountNumber() {
+	public void transferShouldIncreseBalanceInTargetAccountOnSuccess() {
+		
+		var response= bank.transfer(currentAccountNumber, 1, correctPassword, savingsAccountNumber);		
+		assertEquals(ResponseStatus.SUCCESS,response.getCode());		
+		bankAsserts.assertBalance(savingsAccountNumber,initialBalance+1);
+	}
+	
+	
+	
+	
+	@Test
+	public void transferShouldAllowOverDraftFromOverDraftAccount() {
+		
+		double od=1000;
+		double amountTransferred=initialBalance+od;
+		double finalBalance =  - od - od/100;
+		
+		Response response=bank.transfer(odAccountNumber, amountTransferred, correctPassword, savingsAccountNumber);
+		
+		assertEquals(ResponseStatus.SUCCESS, response.getCode());
+		bankAsserts.assertBalance(odAccountNumber, finalBalance);
+		bankAsserts.assertBalance(savingsAccountNumber, initialBalance+amountTransferred);
 		
 	}
-	@Ignore
+	
+	
+
 	@Test
-	public void transferShouldAddBalanceInTargetOnSuccess() {
+	public void canChangePasswordWithValidCurrentPassword() {
+		var newPassword="newPassword";
+		var result=bank.changePassword(savingsAccountNumber, correctPassword, newPassword);
+	
+		assertEquals(ResponseStatus.SUCCESS,result.getCode());
+		//how do I know password is actually changed
+		var balance=bank.getBalance(savingsAccountNumber, newPassword);
+		assertEquals(initialBalance,balance,0);
 		
 	}
 	
+	@Test 
+	public void changePasswordFailsForInvalidCurrentPassword() {
+		String newPassword="new password";
+		var result=bank.changePassword(savingsAccountNumber, "not"+correctPassword, newPassword);
+		
+		assertEquals(ResponseStatus.INVALID_CREDENTIALS,result.getCode());
+		//how do I know password is actually changed
+	}
 	
 	
+	@Test 
+	public void changePasswordFailsForInvalidAccountNumber() {
+		String newPassword="new password";
+		var result=bank.changePassword(-1, "not"+correctPassword, newPassword);
+		
+		assertEquals(ResponseStatus.INVALID_ACCOUNT,result.getCode());
+		//how do I know password is actually changed
+	}
 	
 	
-	
-	
-	
+	 
 	
 
 }

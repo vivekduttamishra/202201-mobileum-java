@@ -1,5 +1,8 @@
-package in.conceptarchitect.banking;
+package in.conceptarchitect.banking.frontend;
 
+import in.conceptarchitect.banking.Bank;
+import in.conceptarchitect.banking.Response;
+import in.conceptarchitect.banking.ResponseStatus;
 import in.conceptarchitect.utils.Input;
 
 public class ATM {
@@ -16,13 +19,18 @@ public class ATM {
 	}
 	
 	public void start() {
-		accountNumber=keyboard.readInt("account number?");
-		password=keyboard.readString("password?");
-		//A secret menu
-		if(accountNumber==-1 && password=="NIMDA")
-			adminMenu();
-		else
-			mainMenu();
+		
+		while(true) {
+		
+			accountNumber=keyboard.readInt("account number?");
+			password=keyboard.readString("password?");
+			//A secret menu
+			if(accountNumber==-1 && password.equals("NIMDA"))
+				adminMenu();
+			else
+				mainMenu();
+		}			
+	
 	}
 	
 	
@@ -30,15 +38,65 @@ public class ATM {
 	private void adminMenu() {
 		// TODO Auto-generated method stub
 		while(true) {
-			var choice=keyboard.readInt("1. open account 2. credit interest 3. view all accounts 0. exit ?");
+			var choice=keyboard.readInt("1. open account 2. credit interest 3. view all accounts 4. shutdown atm 0. exit ?");
 			switch(choice) {
 				case 0:
 					return ;
+					
+				case 1:
+					doOpenAccount();
+					break;
+					
+				case 2:
+					creditInterests();
+					break;
+				case 3:
+					doViewAccounts();
+					break;
+					
+				case 4:
+					doShutdownAtm();
 					
 				default:
 					showError("invalid choice. retry");
 			}
 		}
+	}
+
+	private void doShutdownAtm() {
+		// TODO Auto-generated method stub
+		System.exit(0); //standard java function to exit application
+		
+	}
+
+	private void doViewAccounts() {
+		// TODO Auto-generated method stub
+		String [] accountsInfo= bank.getAllAccountsInfo();
+		for(var info :accountsInfo) {
+			showInfo(String.format(info));
+		}
+		
+	}
+
+	private void creditInterests() {
+		// TODO Auto-generated method stub
+		bank.creditInterest();
+		
+	}
+
+	private void doOpenAccount() {
+		// TODO Auto-generated method stub
+		String accountType=keyboard.readString("account type: savings/current/overdraft ?");
+		String name= keyboard.readString("name?");
+		String password=keyboard.readString("password?");
+		int amount=keyboard.readInt("Amount?");
+		
+		var response= bank.openAccount(accountType, name, password, amount);
+		if(response!=-1)
+			showInfo("You account number is "+response);
+		else
+			showError("Invalid Account Type selected");
+		
 	}
 
 	private void mainMenu() {
@@ -63,7 +121,7 @@ public class ATM {
 				
 			case 5:
 				doCloseAccount();
-				break;
+				return;
 				
 			case 0:
 				return ;
@@ -82,7 +140,8 @@ public class ATM {
 
 	private void doCloseAccount() {
 		// TODO Auto-generated method stub
-		
+		bank.closeAccount(accountNumber, password);
+		return;
 	}
 
 	private void doTransfer() {
@@ -149,3 +208,4 @@ public class ATM {
 	
 	
 }
+ 

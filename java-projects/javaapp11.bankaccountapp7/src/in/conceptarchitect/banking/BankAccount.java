@@ -103,7 +103,7 @@ public abstract class BankAccount {
 			return true;
 		} else {
 			return false;
-		}
+		} 
 	}
 	
 	
@@ -116,7 +116,7 @@ public abstract class BankAccount {
 
 	//package scope
 	//Bank can change it. But client can't
-	void setAccountNumber(int accountNumber2) {
+	void setAccountNumber(int accountNumber) {
 		// TODO Auto-generated method stub
 		this.accountNumber=accountNumber;
 		

@@ -92,18 +92,40 @@ public class Bank {
 
 	public boolean deposit(int accountNumber, double amount) {
 		// TODO Auto-generated method stub
-		return false;
+		var account=getAccount(accountNumber);
+		if(account!=null){
+			return account.deposit(amount);
+		} else
+			return false;
 	}
 
 	public Response withdraw(int accountNumber, double amount, String password) {
 		// TODO Auto-generated method stub
 		var account=getAccount(accountNumber);
-		return account.withdraw(amount, password);
+		if(account!=null)
+			return account.withdraw(amount, password);
+		else
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"No such account");
 	}
 
-	public Response transfer(int accountNumber, int amount, String password, int targetAccount) {
+	public Response transfer(int accountNumber, double amount, String password, int targetAccount) {
 		// TODO Auto-generated method stub
-		return null;
+		var source= getAccount(accountNumber);
+		if(source==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"Invalid Source Account");
+
+		var target=getAccount(targetAccount);
+		if(target==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"Invalid Target Account");
+	
+		var withdrawResult= source.withdraw(amount, password);
+		if(withdrawResult.getCode()==ResponseStatus.SUCCESS) {
+			target.deposit(amount);
+			return new Response(ResponseStatus.SUCCESS,null);
+			
+		}		
+		
+		return withdrawResult; 
 	}
 
 	public void creditInterest() {
@@ -115,7 +137,43 @@ public class Bank {
 		}
 	}
 
+	public double getBalance(int accountNumber, String password) {
+		// TODO Auto-generated method stub
+		var account=getAccount(accountNumber);
+		if(account!=null && account.authenticate(password))
+				return account.getBalance();
+		else
+			return -1;
+	}
+
 	
+	public Response changePassword(int accountNumber, String currentPassword, String newPassword) {
+		var account=getAccount(accountNumber);
+		if(account==null)
+			return new Response(ResponseStatus.INVALID_ACCOUNT,"No such account");
+		if(account.changePassword(currentPassword, newPassword))
+			return new Response(ResponseStatus.SUCCESS,null);
+		else
+			return new Response(ResponseStatus.INVALID_CREDENTIALS,"Invalid Current Password");
+	}
+
+	public String[] getAllAccountsInfo() {
+		// TODO Auto-generated method stub
+		String [] info= new String [ accountCount];
+		var x=0;
+		
+		for(var account : accounts) {
+			if(account!=null) {
+				
+				info[x]=String.format("%d\t%s\t%f", account.getAccountNumber(),account.getName(),account.getBalance());
+				x++;
+			}
+		}
+		
+		return info;
+		
+	}
+	 
 
 }
 

@@ -7,6 +7,6 @@ public enum ResponseStatus {
 	 
 	INSUFFICIENT_FUNDS, //2
 	
-	INVALID_CREDENTIALS, //3
+	INVALID_CREDENTIALS, INVALID_ACCOUNT, //3
 
 }
