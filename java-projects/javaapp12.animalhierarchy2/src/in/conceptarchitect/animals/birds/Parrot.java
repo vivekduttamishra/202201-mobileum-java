@@ -1,6 +1,8 @@
 package in.conceptarchitect.animals.birds;
 
-public class Parrot extends Bird {
+import in.conceptarchitect.animals.Domestic;
+
+public class Parrot extends Bird implements Domestic {
 
 
 	@Override	

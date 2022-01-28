@@ -1,17 +1,18 @@
 package in.conceptarchitect.animals.app;
 
 import in.conceptarchitect.animals.Animal;
+import in.conceptarchitect.animals.Domestic;
+import in.conceptarchitect.animals.Hunter;
+import in.conceptarchitect.animals.Rideable;
 import in.conceptarchitect.animals.birds.Eagle;
 import in.conceptarchitect.animals.birds.Parrot;
 import in.conceptarchitect.animals.mammals.Camel;
-import in.conceptarchitect.animals.mammals.CatFamily;
 import in.conceptarchitect.animals.mammals.Cow;
 import in.conceptarchitect.animals.mammals.Dog;
 import in.conceptarchitect.animals.mammals.Horse;
 import in.conceptarchitect.animals.mammals.Leopard;
 import in.conceptarchitect.animals.mammals.Tiger;
 import in.conceptarchitect.animals.reptiles.Crocodile;
-import in.conceptarchitect.animals.reptiles.Reptile;
 import in.conceptarchitect.animals.reptiles.Snake;
 
 public class App {
@@ -39,13 +40,29 @@ public class App {
 		
 		for(var animal : animals) {
 			
-			System.out.println(animal);
+			
+			
+			
+			
+			
+			
+			
+			String domestic="";
+			
+			if(animal.isDomestic())
+				domestic=" **** ";
+			
+			
+			System.out.println(domestic+animal.toString());
 			System.out.println("\t"+animal.eat());
 			System.out.println("\t"+animal.move());
 			System.out.println("\t"+animal.breed());
 			
+			//letTigerHunt(animal);
 			
+			letHunterHunt(animal);
 			
+			letRideableRide(animal);
 			
 			System.out.println("\n");
 			
@@ -53,6 +70,46 @@ public class App {
 			
 		}
 
+	}
+	
+	private static void letRideableRide(Animal animal) {
+		// TODO Auto-generated method stub
+		if(animal instanceof Rideable) {
+			Rideable rideable=(Rideable) animal;
+			System.out.println("\t"+rideable.ride());
+		}
+	}
+
+	private static void letHunterHunt(Animal animal) {
+		// TODO Auto-generated method stub
+		if(animal instanceof Hunter) {
+			Hunter hunter=(Hunter) animal;
+			System.out.println("\t"+hunter.hunt());
+		}
+	}
+
+	private static void letTigerHunt(Animal animal) {
+		// TODO Auto-generated method stub
+		
+		if( animal instanceof Tiger) {
+			Tiger tiger= (Tiger) animal;
+			System.out.println("\t"+tiger.hunt());
+		}
+		
+	}
+
+	private static void letTigerHuntV1(Animal animal) {
+		// TODO Auto-generated method stub
+		try {
+			
+			Tiger tiger=(Tiger) animal; //forced typecast. it may fail
+			//if it is fine
+			System.out.println("\t"+ tiger.hunt());
+			
+		} catch(ClassCastException ex) {
+			System.out.println("\t"+animal+" is not a hunter");
+		}
+		
 	}
 
 }

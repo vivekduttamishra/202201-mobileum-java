@@ -1,6 +1,8 @@
 package in.conceptarchitect.animals.birds;
 
-public class Eagle extends Bird {
+import in.conceptarchitect.animals.Hunter;
+
+public class Eagle extends Bird implements Hunter {
 
 
 	@Override	
@@ -8,7 +10,8 @@ public class Eagle extends Bird {
 		// TODO Auto-generated method stub
 		return this+" is a flesh eater";
 	}
-	
+
+	@Override
 	public String hunt() {
 		return this+"is flying hunter";
 	}

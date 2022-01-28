@@ -165,7 +165,7 @@ public class Bank {
 		for(var account : accounts) {
 			if(account!=null) {
 				
-				info[x]=String.format("%d\t%s\t%f", account.getAccountNumber(),account.getName(),account.getBalance());
+				info[x]= account.toString();
 				x++;
 			}
 		}

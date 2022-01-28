@@ -107,12 +107,13 @@ public abstract class BankAccount {
 	}
 	
 	
-	
-
-	public String info() {
-		//System.out.println(accountNumber+"\t"+name+"\t"+balance);
-		return String.format("%d\t%s\t%f\n",accountNumber,name,balance);
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return String.format("%s %d\t%s\t%f", getClass().getSimpleName(),accountNumber,name,balance);
 	}
+
+	
 
 	//package scope
 	//Bank can change it. But client can't

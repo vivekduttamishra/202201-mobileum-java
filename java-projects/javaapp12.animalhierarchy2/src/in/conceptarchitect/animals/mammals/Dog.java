@@ -1,6 +1,9 @@
 package in.conceptarchitect.animals.mammals;
 
-public class Dog extends Mammal {
+import in.conceptarchitect.animals.Domestic;
+import in.conceptarchitect.animals.Hunter;
+
+public class Dog extends Mammal implements Hunter, Domestic{
 	
 	@Override	
 	public String eat() {

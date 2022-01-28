@@ -1,6 +1,8 @@
 package in.conceptarchitect.animals.mammals;
 
-public class Cow extends Mammal {
+import in.conceptarchitect.animals.Domestic;
+
+public class Cow extends Mammal implements Domestic {
 	
 	@Override	
 	public String eat() {

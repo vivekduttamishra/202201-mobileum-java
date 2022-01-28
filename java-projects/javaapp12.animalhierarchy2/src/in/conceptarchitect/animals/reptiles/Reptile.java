@@ -1,8 +1,9 @@
 package in.conceptarchitect.animals.reptiles;
 
 import in.conceptarchitect.animals.Animal;
+import in.conceptarchitect.animals.Hunter;
 
-public abstract class Reptile extends Animal {
+public abstract class Reptile extends Animal implements Hunter {
 
 	@Override
 	public String breed() {
@@ -22,6 +23,6 @@ public abstract class Reptile extends Animal {
 		return this+" crawls";
 	}
 	
-	public abstract String hunt();
+	
 	
 }

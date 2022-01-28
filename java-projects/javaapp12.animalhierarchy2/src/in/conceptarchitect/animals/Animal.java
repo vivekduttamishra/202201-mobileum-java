@@ -9,5 +9,15 @@ public abstract class Animal {
 	public String die() {
 		return this+" is dead";
 	}
+	
+	public boolean isDomestic() {
+		return this instanceof Domestic;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return getClass().getSimpleName();
+	}
 
 }
