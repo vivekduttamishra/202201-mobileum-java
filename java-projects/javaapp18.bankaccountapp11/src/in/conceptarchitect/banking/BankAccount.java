@@ -1,11 +1,13 @@
 package in.conceptarchitect.banking;
 
+import java.io.Serializable;
+
 import in.conceptarchitect.banking.exceptions.InsufficientBalanceException;
 import in.conceptarchitect.banking.exceptions.InvalidAmountException;
 import in.conceptarchitect.banking.exceptions.InvalidCredentialsException;
 import in.conceptarchitect.utils.encryption.Encrypt;
 
-public abstract class BankAccount {
+public abstract class BankAccount  implements Serializable{
 	
 	
 	protected abstract double getMaxWithdrawableAmount();
