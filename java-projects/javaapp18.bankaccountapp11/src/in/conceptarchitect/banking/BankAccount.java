@@ -14,7 +14,7 @@ public abstract class BankAccount {
 	private int accountNumber;
 	
 	protected double balance;
-	private String password;
+	String password;
 	
 	
 	
@@ -121,6 +121,11 @@ public abstract class BankAccount {
 		// TODO Auto-generated method stub
 		this.accountNumber=accountNumber;
 		
+	}
+
+	String getPassword() {
+		// TODO Auto-generated method stub
+		return password;
 	}
 	
 	

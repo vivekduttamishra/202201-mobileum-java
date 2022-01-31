@@ -55,6 +55,12 @@ public class ArrayAccountStore implements AccountRepository {
 		// TODO Auto-generated method stub
 		return accountCount;
 	}
+
+	@Override
+	public void save() {
+		//It's only a memory repo. We don't save
+		
+	}
 	
 	
 

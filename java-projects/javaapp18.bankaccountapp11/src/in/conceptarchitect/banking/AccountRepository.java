@@ -11,5 +11,7 @@ public interface AccountRepository {
 	BankAccount[] getAllActiveAdccounts();
 
 	int getAccountCount();
+	
+	void save();
 
 }

@@ -1,58 +1,46 @@
 package in.conceptarchitect.banking;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import in.conceptarchitect.banking.exceptions.InvalidAccountException;
 
-public class ArrayListAccountRepository implements AccountRepository {
+public class HashmapAccountRepository implements AccountRepository {
 
-	
-	ArrayList<BankAccount> accounts=new ArrayList<BankAccount>();
+	HashMap<Integer, BankAccount> accounts= new HashMap<Integer, BankAccount>();
 	int lastId=0;
-	
 
 	@Override
 	public int addAccount(BankAccount account) {
 		// TODO Auto-generated method stub
 		lastId++;
 		account.setAccountNumber(lastId);
-		accounts.add(account);
+		accounts.put(lastId, account);
 		return lastId;
 	}
 
 	@Override
 	public BankAccount getAccount(int accountNumber) {
 		// TODO Auto-generated method stub
-		validateAccountNumber(accountNumber);
-		
-		
-		for(var account : accounts)
-			if(account.getAccountNumber()==accountNumber)
-				return account;
-		
-		throw new InvalidAccountException(accountNumber);
-	}
-
-	private void validateAccountNumber(int accountNumber) {
-		if(accountNumber<1 || accountNumber>lastId)
+		if(accounts.containsKey(accountNumber))
+			return accounts.get(accountNumber);
+		else
 			throw new InvalidAccountException(accountNumber);
 	}
 
 	@Override
 	public void removeAccount(int accountNumber) {
 		// TODO Auto-generated method stub
-		
 		var account=getAccount(accountNumber);
-		
-		accounts.remove(account);
-		
+		accounts.remove(accountNumber);
+
 	}
 
 	@Override
 	public BankAccount[] getAllActiveAdccounts() {
 		// TODO Auto-generated method stub
 		BankAccount [] array= {};
-		return (BankAccount[]) accounts.toArray(array);
+		
+		return accounts.values().toArray(array);
 	}
 
 	@Override
@@ -60,6 +48,7 @@ public class ArrayListAccountRepository implements AccountRepository {
 		// TODO Auto-generated method stub
 		return accounts.size();
 	}
+
 	
 
 	@Override
@@ -68,5 +57,4 @@ public class ArrayListAccountRepository implements AccountRepository {
 		
 	}
 	
-
 }
