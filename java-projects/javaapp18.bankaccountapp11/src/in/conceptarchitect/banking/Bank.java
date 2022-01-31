@@ -11,14 +11,15 @@ public class Bank {
 	
 	private String name;
 	private double rate;
-	private ArrayAccountStore store;
+	private AccountRepository repository;
 	
 
-	public Bank(String name, double rate) {
+	public Bank(String name, double rate, AccountRepository repository) {
 		// TODO Auto-generated constructor stub
 		this.name=name;
 		this.rate=rate;
-		store=new ArrayAccountStore();
+		//store=new ArrayAccountStore();
+		this.repository=repository;
 	}
 
 	public String getName() { 
@@ -48,12 +49,12 @@ public class Bank {
 		if(account==null)
 				throw new InvalidAccountTypeException(0,"Invalid Account Type :"+accountType);
 		
-		return store.addAccount(account);
+		return repository.addAccount(account);
 	}
 
 		
 	public BankAccount getAccount(int accountNumber, String password) {
-		var account=store.getAccount(accountNumber);
+		var account=repository.getAccount(accountNumber);
 		account.authenticate(password);
 		return account;
 	}
@@ -66,7 +67,7 @@ public class Bank {
 		if(account.getBalance()<0)
 			throw new InsufficientBalanceException(accountNumber,-account.getBalance());
 		
-		store.removeAccount(accountNumber);
+		repository.removeAccount(accountNumber);
 		return account.getBalance();
 	}
 
@@ -74,29 +75,29 @@ public class Bank {
 
 	public int getAccountCount() {
 		// TODO Auto-generated method stub
-		return store.getAccountCount();
+		return repository.getAccountCount();
 	}
 
 	
 
 	public void deposit(int accountNumber, double amount) {
 		// TODO Auto-generated method stub
-		var account=store.getAccount(accountNumber);		
+		var account=repository.getAccount(accountNumber);		
 		account.deposit(amount);
 		
 	}
 
 	public void withdraw(int accountNumber, double amount, String password) {
 		// TODO Auto-generated method stub
-		var account=store.getAccount(accountNumber);
+		var account=repository.getAccount(accountNumber);
 		account.withdraw(amount, password);
 		
 	}
 
 	public void transfer(int accountNumber, double amount, String password, int targetAccount) {
 		// TODO Auto-generated method stub
-		var source= store.getAccount(accountNumber);
-		var target=store.getAccount(targetAccount);
+		var source= repository.getAccount(accountNumber);
+		var target=repository.getAccount(targetAccount);
 			
 		source.withdraw(amount, password);
 		target.deposit(amount);
@@ -104,14 +105,14 @@ public class Bank {
 
 	public void creditInterest() {
 		// TODO Auto-generated method stub
-		for(var account :store. getAllActiveAdccounts()) {
+		for(var account :repository. getAllActiveAdccounts()) {
 				account.creditInterest(rate);
 		}
 	}
 
 	public double getBalance(int accountNumber, String password) {
 		// TODO Auto-generated method stub
-		var account=store.getAccount(accountNumber);
+		var account=repository.getAccount(accountNumber);
 		account.authenticate(password);
 		return account.getBalance();
 		
@@ -119,17 +120,17 @@ public class Bank {
 
 	
 	public void changePassword(int accountNumber, String currentPassword, String newPassword) {
-		var account=store.getAccount(accountNumber);
+		var account=repository.getAccount(accountNumber);
 		account.changePassword(currentPassword, newPassword);
 		
 	}
 
 	public String[] getAllAccountsInfo() {
 		// TODO Auto-generated method stub
-		String [] info= new String [ store.getAccountCount()];
+		String [] info= new String [ repository.getAccountCount()];
 		var x=0;
 		
-		for(var account : store.getAllActiveAdccounts()) {
+		for(var account : repository.getAllActiveAdccounts()) {
 			info[x]=account.toString();
 			x++;		
 		}
