@@ -1,8 +1,9 @@
-package in.conceptarchitect.banking.specs;
+package in.conceptarchitect.banking.tests;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,14 +13,16 @@ import in.conceptarchitect.banking.CurrentAccount;
 import in.conceptarchitect.banking.OverdraftAccount;
 import in.conceptarchitect.banking.SavingsAccount;
 import in.conceptarchitect.banking.helpers.BankSearchUtils;
+import in.conceptarchitect.utils.searchutils.ListSearch;
+import in.conceptarchitect.utils.searchutils.Matcher;
 
-public class Assignment8_1Specs {
+public class ListSearchTests {
 	
 	ArrayList<BankAccount> accounts;
 	BankAccount a1,a2,a3,a4,a5;
 	String password="p@ss";
 	
-	ArrayList<BankAccount> selectedAccounts;
+	List<BankAccount> selectedAccounts;
 	
 	
 	@Before
@@ -40,11 +43,23 @@ public class Assignment8_1Specs {
 		
 	}
 	
+	class CurrentAccountMatcher implements Matcher<BankAccount>{
+
+		@Override
+		public boolean isMatch(BankAccount value) {
+			// TODO Auto-generated method stub
+			return value instanceof CurrentAccount;
+		}
+		
+	}
+	
 
 	@Test
 	public void searchCanReturnAllCurrentAccounts() {
 		
-		selectedAccounts= BankSearchUtils.searchCurrentAccounts(accounts);
+		var currentAccountMatcher= new CurrentAccountMatcher();
+		
+		selectedAccounts= ListSearch.search(accounts, currentAccountMatcher);
 		
 		assertEquals(2, selectedAccounts.size());
 		
@@ -52,7 +67,20 @@ public class Assignment8_1Specs {
 	
 	@Test
 	public void searchCanReturnAccountWithNegativeBalance() {
-		selectedAccounts=BankSearchUtils.searchAccountWithNegativeBalance(accounts); //search for accounts with negative balance
+		
+		
+		Matcher<BankAccount> negativeBalance= new Matcher<BankAccount>() {
+
+			@Override
+			public boolean isMatch(BankAccount account) {
+				// TODO Auto-generated method stub
+				return account.getBalance()<0;
+			}
+			
+		};
+		
+		
+		selectedAccounts=ListSearch.search(accounts, negativeBalance);
 		
 		assertEquals(1, selectedAccounts.size());
 		assertEquals(a3, selectedAccounts.get(0));
@@ -60,7 +88,20 @@ public class Assignment8_1Specs {
 	
 	@Test
 	public void searchCanReturnAllAccountWithLastNameMishra() {
-		selectedAccounts=BankSearchUtils.searchAccountWithNameContaining(accounts,"Mishra");
+		
+//		Matcher<BankAccount> mishras= (account) -> { 
+//					return account.getName().contains("Mishra") ; 
+//					} ;
+		
+		
+		
+	//	Matcher<BankAccount> mishras = account -> account.getName().contains("Mishra");
+		
+		
+		selectedAccounts=ListSearch.search(accounts, account->account.getName().contains("Mishra"));
+		
+		
+		
 		
 		assertEquals(2, selectedAccounts.size());
 		assertEquals(a1,selectedAccounts.get(0));
@@ -70,10 +111,27 @@ public class Assignment8_1Specs {
 	
 	@Test
 	public void searchAccountsWithRegularPassword() {
-		selectedAccounts=BankSearchUtils.searchAccountWithPassword(accounts,password);
+		
+		Matcher<BankAccount> matchPassword= account ->{			
+			try {
+				account.authenticate(password);
+				return true;
+			}catch(Exception ex) {
+				return false;
+			}
+		};
+		
+		selectedAccounts=ListSearch.search(accounts, matchPassword);
 		
 		assertEquals(4, selectedAccounts.size());
 	}
 	
 	
 }
+
+
+
+
+
+
+
