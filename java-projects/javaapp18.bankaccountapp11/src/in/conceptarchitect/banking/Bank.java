@@ -1,9 +1,8 @@
 package in.conceptarchitect.banking;
 
-import java.io.Console;
+import java.util.List;
 
 import in.conceptarchitect.banking.exceptions.InsufficientBalanceException;
-import in.conceptarchitect.banking.exceptions.InvalidAccountException;
 import in.conceptarchitect.banking.exceptions.InvalidAccountTypeException;
 
 public class Bank {
@@ -103,11 +102,20 @@ public class Bank {
 		target.deposit(amount);
 	}
 
+//	public void creditInterest() {
+//		// TODO Auto-generated method stub
+//		for(var account :repository. getAllActiveAdccounts()) {
+//				account.creditInterest(rate);
+//		}
+//	}
+	
+	
 	public void creditInterest() {
-		// TODO Auto-generated method stub
-		for(var account :repository. getAllActiveAdccounts()) {
-				account.creditInterest(rate);
-		}
+		
+		repository.forEach(account->account.creditInterest(rate));
+		
+		
+		
 	}
 
 	public double getBalance(int accountNumber, String password) {
@@ -138,6 +146,13 @@ public class Bank {
 		return info;
 		
 	}
+	
+//	
+//	public List<String> getAllAccountsInfo(){
+//		
+//		//return repository.map( account -> account.toString());
+//		
+//	}
 	 
 
 }
