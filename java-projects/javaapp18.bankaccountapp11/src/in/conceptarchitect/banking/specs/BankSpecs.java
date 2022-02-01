@@ -3,6 +3,7 @@ package in.conceptarchitect.banking.specs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -429,23 +430,31 @@ public class BankSpecs {
 		
 	}
 	
-	@Test(expected=InsufficientBalanceException.class)
+	@Test
 	public void withdrawShouldFailForOverDraftForCurrentAccount() {
 		var toWithdraw= initialBalance + 1;
 		
-		bank.withdraw(currentAccountNumber, toWithdraw, correctPassword);
+		assertThrows(InsufficientBalanceException.class, ()-> {		
+			
+			bank.withdraw(currentAccountNumber,toWithdraw , correctPassword);
+			
+		});
 		
 		//bankAsserts.assertBalanceUnchanged(currentAccountNumber);
 		
 	}
 	
-	@Test(expected=InsufficientBalanceException.class)
+	@Test
 	public void withdrawShouldFailForAmountOverBalancePlusOdLimitForOdAccount() {
 		var toWithdraw= initialBalance*1.1 + 1;
 		
-		bank.withdraw(odAccountNumber, toWithdraw, correctPassword);
 		
-		//bankAsserts.assertBalanceUnchanged(odAccountNumber);
+		var exception = assertThrows(InsufficientBalanceException.class, ()->{
+			bank.withdraw(odAccountNumber, toWithdraw, correctPassword);
+		});
+		
+		bankAsserts.assertBalanceUnchanged(odAccountNumber);
+		assertEquals(1, exception.getAmount(),0.01);
 	}
 	
 	

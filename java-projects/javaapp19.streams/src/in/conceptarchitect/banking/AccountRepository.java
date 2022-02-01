@@ -22,26 +22,17 @@ public interface AccountRepository {
 	
 	void save();
 	
-	public default List<BankAccount> search(Matcher<BankAccount> matcher){		
+	public default List<BankAccount> search(Matcher<BankAccount> matcher){
+		
 		var result=new ArrayList<BankAccount>();
 		
 		for(var account : getAllActiveAdccounts())
 			if(matcher.isMatch(account))
-				result.add(account);		
+				result.add(account);
+		
 		
 		return result;
 		
-	}
-	
-	public default <X> List<X> map( Converter<BankAccount,X> converter){
-		
-		ArrayList<X> result = new ArrayList<X>();
-		for(var account : getAllActiveAdccounts()) {
-			X value=converter.convert(account);
-			result.add( value);
-		}
-		
-		return result;
 	}
 	
 	public default void forEach(Action<BankAccount> action) {
@@ -50,7 +41,16 @@ public interface AccountRepository {
 		}
 	}
 	
+	public default <X> List<X> map( Converter<BankAccount,X> converter){
 	
+		ArrayList<X> result = new ArrayList<X>();
+		for(var account : getAllActiveAdccounts()) {
+			X value=converter.convert(account);
+			result.add( value);
+		}
+		
+		return result;
+	}
 
 }
 
