@@ -11,8 +11,8 @@ public class App {
 		//Get a connection from the DriverManager
 		
 		String connectionUrl="jdbc:mysql://localhost:3306/booksdb";
-		String userName="root";
-		String password="root";
+		String userName="vivek";
+		String password="training";
 		
 		//step #1 Get Connection
 		var connection=DriverManager.getConnection(connectionUrl, userName, password);
@@ -28,6 +28,8 @@ public class App {
 		while(rs.next()) { //next() moves the cursor to record as we call
 			
 			System.out.println(rs.getString(1));
+			System.out.println(rs.getString("title"));
+			System.out.println("price after 50% discount:"+rs.getDouble("price")/2);
 			
 		}
 		
