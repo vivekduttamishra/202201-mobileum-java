@@ -24,7 +24,8 @@ public class JdbcBookManager {
 
 		return jdbc.execute( statement ->{
 			
-			var rs = statement.executeQuery("select * from public.\"Books\";");
+			//var rs = statement.executeQuery("select * from books"); //mysql
+			var rs = statement.executeQuery("select * from public.\"Books\";"); //postgres
 			ArrayList<Book> books = new ArrayList<>();
 
 			while (rs.next()) {
